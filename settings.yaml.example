@@ -1,0 +1,4 @@
+production:
+    token: secret_token_goes_here
+development:
+    token: secret_token_goes_here

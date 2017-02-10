@@ -1,0 +1,6 @@
+arrow
+discord.py
+fuzzywuzzy
+python-Levenshtein
+pyyaml
+requests
