@@ -36,7 +36,7 @@ class RedditFeed(object):
             blurb = review_comment.body if len(review_comment.body) <= 400 else review_comment.body[:400] + "..."
             output.append(blurb)
 
-        em = discord.Embed(title="**New Review from u/{}**".format(submission.author.name),
+        em = discord.Embed(title="**New Review from u/{}: {}**".format(submission.author.name, submission.title),
                            description="\n".join(output),
                            colour=0x00DD00)
         em.set_thumbnail(url=submission.url)
@@ -46,15 +46,12 @@ class RedditFeed(object):
 
     async def _check_submissions(self):
         for sub in self.subreddits:
-            for submission in self._reddit.subreddit(sub).new(limit=50):
-                if submission.created_utc < self._last:
-                    break
-                if "review" in submission.title.lower():
+            for submission in self._reddit.subreddit(sub).new(limit=20):
+                if submission.created_utc > self._last and "review" in submission.title.lower():
                     asyncio.ensure_future(self._handle_submission(submission))
         self._last = time.time()
 
     async def monitor(self):
         while True:
-            print("Checking submissions...")
             await self._check_submissions()
             await asyncio.sleep(10)
