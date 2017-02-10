@@ -1,6 +1,7 @@
 arrow
 discord.py
 fuzzywuzzy
+praw>=4
 python-Levenshtein
 pyyaml
 requests

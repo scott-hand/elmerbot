@@ -1,0 +1,8 @@
+# Credentials go here. Fill out default, or provide one or more names and call shreddit with the -u option to specify
+# which set to use.
+# To set up an application, add a script mode app here: https://www.reddit.com/prefs/apps/
+[default]
+client_id=
+client_secret=
+username=
+password=

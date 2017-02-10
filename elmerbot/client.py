@@ -2,13 +2,15 @@ import asyncio
 import discord
 import random
 import string
-from elmerbot.reviews import ReviewData
 from elmerbot.commands.registry import CommandRegistry
+from elmerbot.reddit import RedditFeed
+from elmerbot.reviews import ReviewData
 
 
 class ElmerClient(discord.Client):
     greeting = "Slàinte Mhath, "
     prefix = "!elmer"
+    review_room = "reviews"
 
     def __init__(self, settings):
         self._settings = settings
@@ -21,6 +23,14 @@ class ElmerClient(discord.Client):
 
     async def on_ready(self):
         print("Logged in as {} {}".format(self.user.name, self.user.id))
+        self.feed = RedditFeed(self)
+        for server in self.servers:
+            for channel in server.channels:
+                if channel.name == self.review_room:
+                    print("Posting reviews to channel ID: {}".format(channel.id))
+                    self.feed.add_channel(channel)
+                    break
+        asyncio.ensure_future(self.feed.monitor())
 
     async def on_member_join(self, member):
         await self.send_message(member.server.default_channel, "{}, {}!".format(self.greeting, member.mention))
@@ -29,7 +39,7 @@ class ElmerClient(discord.Client):
         if not message.server or not message.channel:
             return
         myself = [m for m in message.server.members if m.id == self.user.id][0]
-        if not message.author == myself or message.content.startswith(self.prefix):
+        if  message.author == myself or not message.content.startswith(self.prefix):
             return
 
         contents = message.content.split(" ", 1)[1]
