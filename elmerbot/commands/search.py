@@ -22,7 +22,7 @@ class SearchCommand(ElmerCommand):
         if first.isnumeric():
             choices = int(first)
             pattern = rest
-        # Whitelist characters to elimiate Markdown injection
+        # Whitelist characters to eliminate Markdown injection
         whitelist = string.ascii_letters + string.digits + "'()-., "
         pattern = "".join([c for c in pattern if c in whitelist])
         results = client.data.search(pattern, choices)
@@ -67,7 +67,7 @@ class InfoCommand(ElmerCommand):
         if args.isnumeric():
             whisky_id = int(args)
         else:
-            # Whitelist characters to elimiate Markdown injection
+            # Whitelist characters to eliminate Markdown injection
             whitelist = string.ascii_letters + string.digits + "'()-., "
             pattern = "".join([c for c in args if c in whitelist])
             result = client.data.search(pattern, 1)
