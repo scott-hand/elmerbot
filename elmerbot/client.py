@@ -39,7 +39,7 @@ class ElmerClient(discord.Client):
         if not message.server or not message.channel:
             return
         myself = [m for m in message.server.members if m.id == self.user.id][0]
-        if  message.author == myself or not message.content.startswith(self.prefix):
+        if  message.author == myself or not message.content.lower().startswith(self.prefix):
             return
 
         contents = message.content.split(" ", 1)[1]
