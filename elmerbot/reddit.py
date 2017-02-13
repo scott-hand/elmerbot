@@ -2,19 +2,24 @@ import asyncio
 import discord
 import praw
 import time
+from prawcore.exceptions import RequestException
 
 
 class RedditFeed(object):
     subreddits = ["bourbon", "scotch", "worldwhisky"]
 
     def __init__(self, client):
-        self._reddit = praw.Reddit("default", check_for_updates=False, user_agent="python:elmerdiscord:v1.0.0")
+        self._reddit = None
+        self._refresh_reddit_client()
         self._last = time.time()
         self._client = client
         self._channels = []
 
     def add_channel(self, channel):
         self._channels.append(channel)
+
+    def refresh_reddit_client(self):
+        self._reddit = praw.Reddit("default", check_for_updates=False, user_agent="python:elmerdiscord:v1.0.0")
 
     async def _handle_submission(self, submission):
         # Sleep for 5 minutes to give OP time to make the review comment
@@ -45,13 +50,18 @@ class RedditFeed(object):
             await self._client.send_message(channel, embed=em)
 
     async def _check_submissions(self):
-        for sub in self.subreddits:
-            for submission in self._reddit.subreddit(sub).new(limit=20):
-                if submission.created_utc > self._last and "review" in submission.title.lower():
-                    asyncio.ensure_future(self._handle_submission(submission))
-        self._last = time.time()
+        try:
+            for sub in self.subreddits:
+                for submission in self._reddit.subreddit(sub).new(limit=20):
+                    if submission.created_utc > self._last and "review" in submission.title.lower():
+                        asyncio.ensure_future(self._handle_submission(submission))
+            self._last = time.time()
+        except RequestException:
+            # For some reason, PRAW just craps out eventually and stops working. Refresh our session so that hopefully
+            # it will work next time...
+            self.refresh_reddit_client()
 
     async def monitor(self):
         while True:
             await self._check_submissions()
-            await asyncio.sleep(10)
+            await asyncio.sleep(30)
