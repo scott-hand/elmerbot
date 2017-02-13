@@ -18,7 +18,7 @@ class RedditFeed(object):
     def add_channel(self, channel):
         self._channels.append(channel)
 
-    def refresh_reddit_client(self):
+    def _refresh_reddit_client(self):
         self._reddit = praw.Reddit("default", check_for_updates=False, user_agent="python:elmerdiscord:v1.0.0")
 
     async def _handle_submission(self, submission):
@@ -59,7 +59,7 @@ class RedditFeed(object):
         except RequestException:
             # For some reason, PRAW just craps out eventually and stops working. Refresh our session so that hopefully
             # it will work next time...
-            self.refresh_reddit_client()
+            self._refresh_reddit_client()
 
     async def monitor(self):
         while True:
