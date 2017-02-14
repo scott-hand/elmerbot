@@ -56,10 +56,12 @@ class RedditFeed(object):
                     if submission.created_utc > self._last and "review" in submission.title.lower():
                         asyncio.ensure_future(self._handle_submission(submission))
             self._last = time.time()
-        except RequestException:
+        except RequestException as e:
             # For some reason, PRAW just craps out eventually and stops working. Refresh our session so that hopefully
             # it will work next time...
+            print("Error encountered during submission check: {}".format(e))
             self._refresh_reddit_client()
+            await asyncio.sleep(1)
 
     async def monitor(self):
         while True:
