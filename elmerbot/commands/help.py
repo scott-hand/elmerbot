@@ -16,7 +16,7 @@ class HelpCommand(ElmerCommand):
         output = ["**Usage**: `{} <command> <arguments>`\n".format(client.prefix)]
         # Now dynamically generate command help
         output.append("**Commands**\n")
-        for command in client.registry.commands:
+        for command in client.cmd_registry.commands:
             output.append("**{}**\n{}\n".format(command.command, command.description))
         # Combine, send, and clean up the help command message
         help_msg = "\n".join(output)

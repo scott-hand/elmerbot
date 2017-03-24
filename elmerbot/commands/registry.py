@@ -21,7 +21,7 @@ class CommandRegistry(object):
         to_load = {"search": ["SearchCommand", "InfoCommand"],
                    "help": ["HelpCommand"]}
         registry = CommandRegistry()
-        logger = build_logger("registry")
+        logger = build_logger("command-registry")
 
         for modname, classnames in to_load.items():
             module = importlib.import_module("elmerbot.commands.{}".format(modname))

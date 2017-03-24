@@ -4,6 +4,7 @@ import random
 import string
 from elmerbot.commands.registry import CommandRegistry
 from elmerbot.logs import build_logger
+from elmerbot.parsers.registry import ParserRegistry
 from elmerbot.reviews import ReviewData
 
 
@@ -14,7 +15,8 @@ class ElmerBotClient(discord.Client):
     def __init__(self, settings):
         self._settings = settings
         self.data = ReviewData()
-        self.registry = CommandRegistry.build()
+        self.cmd_registry = CommandRegistry.build()
+        self.parser_registry = ParserRegistry.build()
         self._logger = build_logger("client")
         super(ElmerBotClient, self).__init__()
 
@@ -30,8 +32,19 @@ class ElmerBotClient(discord.Client):
     async def on_message(self, message):
         if not message.server or not message.channel:
             return
+
+        # Prevent bot answering itself
         myself = [m for m in message.server.members if m.id == self.user.id][0]
-        if  message.author == myself or not message.content.lower().startswith(self.prefix):
+        if  message.author == myself:
+            return
+
+        # Check all parsers
+        for parser in self.parser_registry.parsers:
+            if parser.check(message.content):
+                await parser.handle(self, message)
+
+        # Validate against prefix
+        if not message.content.lower().startswith(self.prefix):
             return
 
         # Just for a while to ease the transition
@@ -39,8 +52,9 @@ class ElmerBotClient(discord.Client):
             await self.send_message(message.channel, "I've been tweaked to use **!** instead of **!elmer** now.")
             return
 
+        # Parse out command and check against all commands
         contents = message.content[len(self.prefix):]
         command, _, args = contents.strip().partition(" ")
-        handler = self.registry.find(command)
+        handler = self.cmd_registry.find(command)
         if handler:
             await handler.handle(self, message, args)

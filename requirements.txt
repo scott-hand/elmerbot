@@ -3,6 +3,7 @@ arrow
 discord.py
 fuzzywuzzy
 praw>=4
+python-forex
 python-Levenshtein
 pyyaml
 requests
