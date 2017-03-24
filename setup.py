@@ -24,6 +24,6 @@ setup(
     classifiers=["Development Status :: 3 - Alpha",
                  "Intended Audience :: Developers",
                  "Programming Language :: Python :: 3"],
-    packages=["elmerbot", "elmerbot.bot", "elmerbot.commands", "elmerbot.reddit"]
+    packages=["elmerbot", "elmerbot.bot", "elmerbot.commands", "elmerbot.reddit"],
     install_requires=requirements
 )

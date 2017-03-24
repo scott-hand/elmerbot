@@ -11,8 +11,9 @@ def main():
     parser = argparse.ArgumentParser(description="Starts elmerbot client")
     parser.add_argument("mode", help="Which mode to start (bot or reddit)")
     parser.add_argument("-e", "--env", help="production or development (Default: development)", default="development")
+    parser.add_argument("-s", "--settings", help="YAML file with settings", default="settings.yaml")
     args = parser.parse_args()
-    settings = yaml.load(open("settings.yaml"))
+    settings = yaml.load(open(args.settings))
     logger = build_logger("application")
     logger.info("Starting bot...")
     if args.mode == "bot":
