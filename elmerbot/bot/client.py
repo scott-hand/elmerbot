@@ -3,34 +3,26 @@ import discord
 import random
 import string
 from elmerbot.commands.registry import CommandRegistry
-from elmerbot.reddit import RedditFeed
+from elmerbot.logs import build_logger
 from elmerbot.reviews import ReviewData
 
 
-class ElmerClient(discord.Client):
+class ElmerBotClient(discord.Client):
     greeting = "Slàinte Mhath, "
-    prefix = "!elmer"
-    review_room = "reviews"
+    prefix = "!"
 
     def __init__(self, settings):
         self._settings = settings
         self.data = ReviewData()
         self.registry = CommandRegistry.build()
-        super(ElmerClient, self).__init__()
+        self._logger = build_logger("client")
+        super(ElmerBotClient, self).__init__()
 
     def run(self):
-        super(ElmerClient, self).run(self._settings.get("token", ""))
+        super(ElmerBotClient, self).run(self._settings.get("token", ""))
 
     async def on_ready(self):
-        print("Logged in as {} {}".format(self.user.name, self.user.id))
-        self.feed = RedditFeed(self)
-        for server in self.servers:
-            for channel in server.channels:
-                if channel.name == self.review_room:
-                    print("Posting reviews to channel ID: {}".format(channel.id))
-                    self.feed.add_channel(channel)
-                    break
-        asyncio.ensure_future(self.feed.monitor())
+        self._logger.info("Logged in as {} {}".format(self.user.name, self.user.id))
 
     async def on_member_join(self, member):
         await self.send_message(member.server.default_channel, "{}, {}!".format(self.greeting, member.mention))
@@ -42,7 +34,12 @@ class ElmerClient(discord.Client):
         if  message.author == myself or not message.content.lower().startswith(self.prefix):
             return
 
-        contents = message.content.split(" ", 1)[1]
+        # Just for a while to ease the transition
+        if message.content.startswith("!elmer"):
+            await self.send_message(message.channel, "I've been tweaked to use **!** instead of **!elmer** now.")
+            return
+
+        contents = message.content[len(self.prefix):]
         command, _, args = contents.strip().partition(" ")
         handler = self.registry.find(command)
         if handler:

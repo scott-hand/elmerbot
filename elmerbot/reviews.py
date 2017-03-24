@@ -6,6 +6,7 @@ import os
 import requests
 import statistics
 from collections import defaultdict
+from elmerbot.logs import build_logger
 from fuzzywuzzy import process
 
 SPREADSHEET_URL = "https://docs.google.com/spreadsheets/export?format=csv&id=1X1HTxkI6SqsdpNSkSSivMzpxNT-oeTbjFFDdEkXD30o"
@@ -41,6 +42,7 @@ class ReviewData(object):
         self._rev_id_idx = {}
         self.avg = 0
         self.stddev = 0
+        self._logger = build_logger("review-scraper")
 
     def _build_id_index(self):
         for idx, wname in enumerate(self._cache):
@@ -57,10 +59,11 @@ class ReviewData(object):
         self.stddev = round(statistics.stdev(scores), 2)
 
     def _reload(self):
-        print("Reloading review data...")
+        self._logger.info("Reloading review data...")
 
         # Try from cached file
         if os.path.exists("/tmp/review_cache.json"):
+            self._logger.info("Loading from file cache...")
             data = json.load(open("/tmp/review_cache.json"))
             if arrow.get().timestamp < data["expiration"]:
                 self._cache = data["cache"]
@@ -96,11 +99,15 @@ class ReviewData(object):
 
         with open("/tmp/review_cache.json", "w") as fout:
             fout.write(json.dumps({"expiration": self._expires, "cache": self._cache}))
-        print("Finished. {} reviews indexed".format(total))
+        self._logger.info("Finished. {} reviews indexed".format(total))
+
+    @property
+    def stale(self):
+        return not self._cache or arrow.get().timestamp >= self._expires
 
     @property
     def reviews(self):
-        if not self._cache or arrow.get().timestamp >= self._expires:
+        if self.stale:
             self._reload()
         return self._cache
 

@@ -10,7 +10,7 @@ class HelpCommand(ElmerCommand):
         super(HelpCommand, self).__init__(registry)
 
     async def handle(self, client, message, args):
-        print("Got help command!")
+        self._logger.info("Got help command!")
         # First add high level usage info
 
         output = ["**Usage**: `{} <command> <arguments>`\n".format(client.prefix)]

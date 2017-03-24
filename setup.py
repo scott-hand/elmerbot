@@ -4,7 +4,7 @@ from setuptools import setup
 from codecs import open
 from os import path
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 DESCRIPTION = "Whisky review helper bot for discord"
 
 here = path.abspath(path.dirname(__file__))
@@ -23,7 +23,7 @@ setup(
     author="vkdiscord",
     classifiers=["Development Status :: 3 - Alpha",
                  "Intended Audience :: Developers",
-                 "Programming Language :: Python"],
-    packages=["elmerbot", "elmerbot.commands"]
+                 "Programming Language :: Python :: 3"],
+    packages=["elmerbot", "elmerbot.bot", "elmerbot.commands", "elmerbot.reddit"]
     install_requires=requirements
 )

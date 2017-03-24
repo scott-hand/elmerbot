@@ -1,4 +1,5 @@
 import importlib
+from elmerbot.logs import build_logger
 
 
 class CommandRegistry(object):
@@ -20,12 +21,13 @@ class CommandRegistry(object):
         to_load = {"search": ["SearchCommand", "InfoCommand"],
                    "help": ["HelpCommand"]}
         registry = CommandRegistry()
+        logger = build_logger("registry")
 
         for modname, classnames in to_load.items():
             module = importlib.import_module("elmerbot.commands.{}".format(modname))
             for classname in classnames:
                 cmdclass = getattr(module, classname)
                 registry.register(cmdclass(registry)) 
-                print("Registered command module: {}.{}".format(modname, classname))
+                logger.info("Registered command module: {}.{}".format(modname, classname))
         cls._instance = registry
         return registry

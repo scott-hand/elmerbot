@@ -2,6 +2,8 @@ import asyncio
 import discord
 import praw
 import time
+import traceback
+from elmerbot.logs import build_logger
 from prawcore.exceptions import RequestException
 
 
@@ -14,6 +16,7 @@ class RedditFeed(object):
         self._last = time.time()
         self._client = client
         self._channels = []
+        self._logger = build_logger("reddit")
 
     def add_channel(self, channel):
         self._channels.append(channel)
@@ -24,7 +27,7 @@ class RedditFeed(object):
     async def _handle_submission(self, submission):
         # Sleep for 5 minutes to give OP time to make the review comment
         try:
-            print("Handling {}".format(submission.title))
+            self._logger.info("Handling {}".format(submission.title))
             await asyncio.sleep(300.0)
             output = []
             output.append("https://www.reddit.com{}\n".format(submission.permalink))
@@ -50,10 +53,11 @@ class RedditFeed(object):
             for channel in self._channels:
                 await self._client.send_message(channel, embed=em)
         except Exception as e:
-            print("Got exception: {}".format(e))
+            self._logger.error("Got exception: {}".format(e))
             await asyncio.sleep(0)
 
     async def _check_submissions(self):
+        self._logger.info("Checking reddit submissions...")
         try:
             for sub in self.subreddits:
                 for submission in self._reddit.subreddit(sub).new(limit=20):
@@ -63,9 +67,13 @@ class RedditFeed(object):
         except RequestException as e:
             # For some reason, PRAW just craps out eventually and stops working. Refresh our session so that hopefully
             # it will work next time...
-            print("Error encountered during submission check: {}".format(e))
+            self._logger.error("Error encountered during submission check: {}".format(e))
             self._refresh_reddit_client()
             await asyncio.sleep(1)
+        except Exception as exc:
+            # Take note and handle next time
+            self._logger.error("Unknown exception: {}".format(exc))
+            traceback.print_exc()
 
     async def monitor(self):
         while True:

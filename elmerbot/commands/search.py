@@ -14,7 +14,9 @@ class SearchCommand(ElmerCommand):
         super(SearchCommand, self).__init__(registry)
 
     async def handle(self, client, message, args):
-        print("Got search command!")
+        self._logger.info("Got search command")
+        if client.data.stale:
+            await client.send_message(message.channel, "One moment, reloading review data...")
         await client.send_typing(message.channel)
         first, _, rest = args.partition(" ")
         pattern = args
@@ -62,7 +64,10 @@ class InfoCommand(ElmerCommand):
         super(InfoCommand, self).__init__(registry)
 
     async def handle(self, client, message, args):
-        print("Got info command!")
+        self._logger.info("Got info command")
+        pending_msg = None
+        if client.data.stale:
+            pending_msg = await client.send_message(message.channel, "One moment, reloading review data...")
         await client.send_typing(message.channel)
         if args.isnumeric():
             whisky_id = int(args)
@@ -79,6 +84,8 @@ class InfoCommand(ElmerCommand):
                 return
             whisky_id = result[0][1]
         data = client.data.find(whisky_id)
+        if pending_msg:
+            await client.delete_message(pending_msg)
         output = []
 
         # Generate stats
