@@ -5,11 +5,14 @@ from elmerbot.parsers import ElmerParser
 from forex_python.converter import CurrencyRates
 
 
+__all__ = ["CurrencyParser"]
+
+
 class CurrencyParser(ElmerParser):
     name = "currency"
 
-    def __init__(self, registry):
-        super(CurrencyParser, self).__init__(registry)
+    def __init__(self):
+        super(CurrencyParser, self).__init__()
         self._last_refreshed = 0
         self._cache = {}
         self._rates = CurrencyRates()

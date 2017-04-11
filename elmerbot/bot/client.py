@@ -2,9 +2,9 @@ import asyncio
 import discord
 import random
 import string
-from elmerbot.commands.registry import CommandRegistry
+from elmerbot.commands import ElmerCommand
 from elmerbot.logs import build_logger
-from elmerbot.parsers.registry import ParserRegistry
+from elmerbot.parsers import ElmerParser
 from elmerbot.reviews import ReviewData
 
 
@@ -15,9 +15,11 @@ class ElmerBotClient(discord.Client):
     def __init__(self, settings):
         self._settings = settings
         self.data = ReviewData()
-        self.cmd_registry = CommandRegistry.build()
-        self.parser_registry = ParserRegistry.build()
         self._logger = build_logger("client")
+        for command_obj in ElmerCommand.registry:
+            self._logger.info(f"Registered command module: {type(command_obj).__name__}")
+        for parser_obj in ElmerParser.registry:
+            self._logger.info(f"Registered parser module: {type(parser_obj).__name__}")
         super(ElmerBotClient, self).__init__()
 
     def run(self):
@@ -39,7 +41,7 @@ class ElmerBotClient(discord.Client):
             return
 
         # Check all parsers
-        for parser in self.parser_registry.parsers:
+        for parser in ElmerParser.registry:
             if parser.check(message.content):
                 await parser.handle(self, message)
 
@@ -55,6 +57,6 @@ class ElmerBotClient(discord.Client):
         # Parse out command and check against all commands
         contents = message.content[len(self.prefix):]
         command, _, args = contents.strip().partition(" ")
-        handler = self.cmd_registry.find(command)
+        handler = ElmerCommand.find(command)
         if handler:
             await handler.handle(self, message, args)

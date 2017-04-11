@@ -2,12 +2,12 @@ import discord
 from elmerbot.commands import ElmerCommand
 
 
+__all__ = ["HelpCommand"]
+
+
 class HelpCommand(ElmerCommand):
     command = "help"
     description = "Send this help message."
-
-    def __init__(self, registry):
-        super(HelpCommand, self).__init__(registry)
 
     async def handle(self, client, message, args):
         self._logger.info("Got help command!")
@@ -16,7 +16,7 @@ class HelpCommand(ElmerCommand):
         output = ["**Usage**: `{} <command> <arguments>`\n".format(client.prefix)]
         # Now dynamically generate command help
         output.append("**Commands**\n")
-        for command in client.cmd_registry.commands:
+        for command in ElmerCommand.registry:
             output.append("**{}**\n{}\n".format(command.command, command.description))
         # Combine, send, and clean up the help command message
         help_msg = "\n".join(output)

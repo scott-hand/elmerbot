@@ -3,15 +3,15 @@ import string
 from elmerbot.commands import ElmerCommand
 
 
+__all__ = ["SearchCommand", "InfoCommand"]
+
+
 class SearchCommand(ElmerCommand):
     command = "search"
     description = ("Search for a whisky by name. Optionally put a number of results to limit it to in front of "
                    "your query.\n"
                    "Examples: `!search stagg 2014` or `!search 10 stagg`"
                    )
-
-    def __init__(self, registry):
-        super(SearchCommand, self).__init__(registry)
 
     async def handle(self, client, message, args):
         self._logger.info("Got search command")
@@ -59,9 +59,6 @@ class InfoCommand(ElmerCommand):
                    "query.\n"
                    "Examples: `!search stagg 2014` or `!search 10 stagg`"
                    )
-
-    def __init__(self, registry):
-        super(InfoCommand, self).__init__(registry)
 
     async def handle(self, client, message, args):
         self._logger.info("Got info command")
