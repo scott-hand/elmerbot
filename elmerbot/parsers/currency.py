@@ -40,9 +40,9 @@ class CurrencyParser(ElmerParser):
                            description="Currency Conversion Table",
                            color=0x00DD00)
         rates = self._get_unit(unit)
-        rates[unit] = amount
+        rates[unit] = 1
         for other_unit in self._currencies:
             display_value = str(rates[other_unit]).zfill(2)
-            display_value = "{:.2f}".format(rates[other_unit])
+            display_value = "{:.2f}".format(amount * rates[other_unit])
             em.add_field(name=other_unit, value=display_value)
         await client.send_message(message.channel, embed=em)
