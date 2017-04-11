@@ -7,7 +7,7 @@ class SearchCommand(ElmerCommand):
     command = "search"
     description = ("Search for a whisky by name. Optionally put a number of results to limit it to in front of "
                    "your query.\n"
-                   "Examples: `!elmer search stagg 2014` or `!elmer search 10 stagg`"
+                   "Examples: `!search stagg 2014` or `!search 10 stagg`"
                    )
 
     def __init__(self, registry):
@@ -45,7 +45,7 @@ class SearchCommand(ElmerCommand):
             last_conf = conf
             output.append("**{}** [#{}]".format(token, whisky_id))
         hits = len(output)
-        output += ["", "Use **!elmer info <id>** to get review information. The <id> is the number in brackets \
+        output += ["", "Use **!info <id>** to get review information. The <id> is the number in brackets \
                 from search results."]
         em = discord.Embed(title="{} Results for \"{}\":".format(hits, pattern),
                            description="\n".join(output),
@@ -57,7 +57,7 @@ class InfoCommand(ElmerCommand):
     command = "info"
     description = ("Search for a whisky by name. Optionally put a number of results to limit it to in front of your "
                    "query.\n"
-                   "Examples: `!elmer search stagg 2014` or `!elmer search 10 stagg`"
+                   "Examples: `!search stagg 2014` or `!search 10 stagg`"
                    )
 
     def __init__(self, registry):
@@ -78,7 +78,7 @@ class InfoCommand(ElmerCommand):
             result = client.data.search(pattern, 1)
             if not result:
                 em = discord.Embed(title="Could not find \"{}\"".format(pattern),
-                                   description="Try using **!elmer search** first.",
+                                   description="Try using **!search** first.",
                                    colour=0xDD0000)
                 await client.send_message(message.channel, embed=em)
                 return
