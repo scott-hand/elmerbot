@@ -21,4 +21,4 @@ class ElmerRedditClient(discord.Client):
         self._logger.info("Logged in as {} {}".format(self.user.name, self.user.id))
         self.feed = RedditFeed(self)
         self.feed.add_channel(discord.utils.get(self.get_all_channels(), name=self.review_room))
-        asyncio.ensure_future(self.feed.monitor())
+        self.loop.create_task(self.feed.monitor())
