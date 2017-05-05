@@ -9,7 +9,7 @@ from elmerbot.reviews import ReviewData
 
 
 class ElmerBotClient(discord.Client):
-    greeting = "Slàinte Mhath, "
+    greeting = "Slàinte Mhath"
     prefix = "!"
 
     def __init__(self, settings):
