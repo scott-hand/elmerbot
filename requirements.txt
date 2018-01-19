@@ -1,9 +1,9 @@
 appdirs
 arrow
 discord.py
+forex-python
 fuzzywuzzy
 praw>=4
-python-forex
 python-Levenshtein
 pyyaml
 requests
