@@ -85,11 +85,11 @@ class ReviewData(object):
         total = 0
         for idx, row in enumerate(reader):
             total += 1
-            entry = {"name": row["Whisky Name"].strip(), "username": row["Reviewer's Reddit Username"].strip(),
-                     "link": row["Link To Reddit Review"].strip(), "price": row["Full Bottle Price Paid"],
-                     "date": parse_date(row["Date of Review"]), "id": idx}
+            entry = {"name": row["Whisky Name"].strip(), "username": row["Reviewer's Username"].strip(),
+                     "link": row["Link"].strip(), "price": row["Price Paid"],
+                     "date": parse_date(row["Date"]), "id": idx}
             try:
-                entry["rating"] = int(row["Reviewer Rating"].strip())
+                entry["rating"] = int(row["Rating"].strip())
             except:
                 entry["rating"] = None
             self._cache[row["Whisky Name"].strip()].append(entry)
