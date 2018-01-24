@@ -1,5 +1,5 @@
+import logging
 from elmerbot import RegisteredClass
-from elmerbot.logs import build_logger
 
 
 class ElmerParser(object, metaclass=RegisteredClass):
@@ -8,7 +8,7 @@ class ElmerParser(object, metaclass=RegisteredClass):
     name = None
 
     def __init__(self):
-        self._logger = build_logger("{}-parser".format(self.name or "noname"))
+        self._logger = logging.getLogger("elmerbot.{}-parser".format(self.name or "noname"))
 
     def check(self, contents):
         raise NotImplementedError

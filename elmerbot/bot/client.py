@@ -1,9 +1,14 @@
+import argparse
 import asyncio
 import discord
+import json
+import logging
 import random
 import string
+import sys
+import yaml
 from elmerbot.commands import ElmerCommand
-from elmerbot.logs import build_logger
+from elmerbot.logs import configure_logger
 from elmerbot.parsers import ElmerParser
 from elmerbot.reviews import ReviewData
 
@@ -15,7 +20,7 @@ class ElmerBotClient(discord.Client):
     def __init__(self, settings):
         self._settings = settings
         self.data = ReviewData()
-        self._logger = build_logger("client")
+        self._logger = logging.getLogger("elmerbot.client")
         for command_obj in ElmerCommand.registry:
             self._logger.info(f"Registered command module: {type(command_obj).__name__}")
         for parser_obj in ElmerParser.registry:
@@ -60,3 +65,21 @@ class ElmerBotClient(discord.Client):
         handler = ElmerCommand.find(command)
         if handler:
             await handler.handle(self, message, args)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Starts elmerbot client")
+    parser.add_argument("-e", "--env", help="production or development (Default: development)", default="development")
+    parser.add_argument("-s", "--settings", help="YAML file with settings", default="settings.yaml")
+    args = parser.parse_args()
+    settings = yaml.load(open(args.settings))
+    configure_logger("elmerbot", logging.INFO)
+    logger = logging.getLogger("elmerbot.main")
+    logger.info("Starting bot...")
+    client = ElmerBotClient(settings[args.env])
+    client.run()
+    logger.info("Exiting...")
+
+
+if __name__ == "__main__":
+    main()

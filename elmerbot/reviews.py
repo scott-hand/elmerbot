@@ -2,12 +2,13 @@ import arrow
 import csv
 import io
 import json
+import logging
 import os
 import requests
 import statistics
 from collections import defaultdict
-from elmerbot.logs import build_logger
 from fuzzywuzzy import process
+
 
 SPREADSHEET_URL = "https://docs.google.com/spreadsheets/export?format=csv&id=1X1HTxkI6SqsdpNSkSSivMzpxNT-oeTbjFFDdEkXD30o"
 
@@ -42,7 +43,7 @@ class ReviewData(object):
         self._rev_id_idx = {}
         self.avg = 0
         self.stddev = 0
-        self._logger = build_logger("review-scraper")
+        self._logger = logging.getLogger("elmerbot.scraper")
 
     def _build_id_index(self):
         for idx, wname in enumerate(self._cache):
@@ -85,11 +86,13 @@ class ReviewData(object):
         total = 0
         for idx, row in enumerate(reader):
             total += 1
-            entry = {"name": row["Whisky Name"].strip(), "username": row["Reviewer's Username"].strip(),
-                     "link": row["Link"].strip(), "price": row["Price Paid"],
-                     "date": parse_date(row["Date"]), "id": idx}
+            entry = {"name": row["Whisky Name"].strip(),
+                     "username": row["Reviewer's Reddit Username"].strip(),
+                     "link": row["Link To Reddit Review"].strip(),
+                     "price": row["Full Bottle Price Paid"],
+                     "date": parse_date(row["Date of Review"]), "id": idx}
             try:
-                entry["rating"] = int(row["Rating"].strip())
+                entry["rating"] = int(row["Reviewer Rating"].strip())
             except:
                 entry["rating"] = None
             self._cache[row["Whisky Name"].strip()].append(entry)

@@ -1,5 +1,5 @@
+import logging
 from elmerbot import RegisteredClass
-from elmerbot.logs import build_logger
 
 
 class ElmerCommand(object, metaclass=RegisteredClass):
@@ -12,7 +12,7 @@ class ElmerCommand(object, metaclass=RegisteredClass):
     description = None
 
     def __init__(self):
-        self._logger = build_logger("{}-cmd".format(self.command or "noname"))
+        self._logger = logging.getLogger("elmerbot.{}-cmd".format(self.command or "noname"))
 
     async def handle(self, message, args):
         raise NotImplementedError

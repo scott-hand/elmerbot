@@ -1,5 +1,6 @@
 appdirs
 arrow
+configargparse
 discord.py
 forex-python
 fuzzywuzzy

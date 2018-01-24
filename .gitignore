@@ -3,6 +3,7 @@ settings.yaml
 Makefile
 invite.txt
 praw.ini
+*.cfg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
