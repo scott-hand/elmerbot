@@ -28,7 +28,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "elmerbot=elmerbot.box.client:main",
+            "elmerbot=elmerbot.bot.client:main",
             "elmerfeed=elmerbot.feed:main"
         ]
     }

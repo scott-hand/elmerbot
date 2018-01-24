@@ -76,7 +76,7 @@ class ReviewFeed(object):
                 seen = set()
                 for submission in self._reddit.subreddit(sub).new(limit=20):
                     seen.add(submission.id)
-                    if start - submission.created_utc > 10000:
+                    if start - submission.created_utc > 3600:
                         # Skip really old ones on the first run
                         continue
                     if submission.id not in self._history[sub]:
