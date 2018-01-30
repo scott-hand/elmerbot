@@ -60,7 +60,6 @@ class ReviewFeed(object):
                     oldest = comment.created
                     review_comment = comment
         if review_comment:
-            posted = True
             body = review_comment.body if len(review_comment.body) <= 400 else review_comment.body[:400] + "..."
             embed["description"] += ":\n\n" + body
         response = requests.post(self._webhook_url, json={"embeds": [embed]})

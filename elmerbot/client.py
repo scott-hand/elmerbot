@@ -1,11 +1,6 @@
 import argparse
-import asyncio
 import discord
-import json
 import logging
-import random
-import string
-import sys
 import yaml
 from elmerbot.commands import ElmerCommand
 from elmerbot.logs import configure_logger
