@@ -1,4 +1,6 @@
 production:
     token: secret_token_goes_here
+    greeting_room_id: 12345
 development:
     token: secret_token_goes_here
+    greeting_room_id: 12345

@@ -15,6 +15,7 @@ class ElmerBotClient(discord.Client):
     def __init__(self, settings):
         self._settings = settings
         self.data = ReviewData()
+        self._greeting_channel = None
         self._logger = logging.getLogger("elmerbot.client")
         for command_obj in ElmerCommand.registry:
             self._logger.info(f"Registered command module: {type(command_obj).__name__}")
@@ -27,9 +28,12 @@ class ElmerBotClient(discord.Client):
 
     async def on_ready(self):
         self._logger.info("Logged in as {} {}".format(self.user.name, self.user.id))
+        if "greeting_room_id" in self._settings:
+            self._greeting_channel = self.get_channel(str(self._settings["greeting_room_id"]))
 
     async def on_member_join(self, member):
-        await self.send_message(member.server.default_channel, "{}, {}!".format(self.greeting, member.mention))
+        if self._greeting_channel:
+            await self.send_message(self._greeting_channel, "{}, {}!".format(self.greeting, member.mention))
 
     async def on_message(self, message):
         if not message.server or not message.channel:
