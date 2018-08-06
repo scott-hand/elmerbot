@@ -4,7 +4,7 @@ from setuptools import setup
 from codecs import open
 from os import path
 
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 DESCRIPTION = "Whisky review helper bot for discord"
 
 here = path.abspath(path.dirname(__file__))
