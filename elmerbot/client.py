@@ -2,6 +2,7 @@ import argparse
 import discord
 import logging
 import yaml
+from elmerbot.antispam import check_name
 from elmerbot.commands import ElmerCommand
 from elmerbot.logs import configure_logger
 from elmerbot.parsers import ElmerParser
@@ -30,10 +31,19 @@ class ElmerBotClient(discord.Client):
         self._logger.info("Logged in as {} {}".format(self.user.name, self.user.id))
         if "greeting_room_id" in self._settings:
             self._greeting_channel = self.get_channel(str(self._settings["greeting_room_id"]))
+            self._logger.info(f"Greeting channel: {self._greeting_channel}")
 
     async def on_member_join(self, member):
+        if check_name(member.name):
+            await self.send_message(member, "You are being banned because your name matched a spam filter.")
+            await self.ban(member)
         if self._greeting_channel:
             await self.send_message(self._greeting_channel, "{}, {}!".format(self.greeting, member.mention))
+
+    async def on_member_update(self, before, after):
+        if check_name(after.name):
+            await self.send_message(after, "You are being banned because your name matched a spam filter.")
+            await self.ban(after)
 
     async def on_message(self, message):
         if not message.server or not message.channel:
