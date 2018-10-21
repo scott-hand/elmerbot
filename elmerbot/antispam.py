@@ -4,8 +4,10 @@ import re
 
 invite_pattern = re.compile(r"discord\.gg/\w{3}")
 tag_pattern = re.compile(r"add.*tag.*\d{4}")
+twitch_pattern = re.compile(r"twitch\.tv")
+twitter_pattern = re.compile(r"twitter\.com")
 debugging_pattern = re.compile(r"elmerbot_spam_name_debugging")
-name_patterns = [invite_pattern, tag_pattern, debugging_pattern]
+name_patterns = [invite_pattern, tag_pattern, twitch_pattern, twitter_pattern, debugging_pattern]
 
 
 def check_name(name):
