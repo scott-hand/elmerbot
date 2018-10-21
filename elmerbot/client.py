@@ -34,15 +34,23 @@ class ElmerBotClient(discord.Client):
             self._logger.info(f"Greeting channel: {self._greeting_channel}")
 
     async def on_member_join(self, member):
+        if "appeal_server_id" in self._settings:
+            msg = ("You are being banned because your name matched a spam filter. If this "
+                  "was done in error and you would like to request to be unbanned, please "
+                  f"join our ban appeal server at https://discord.gg/{self._settings['appeal_server_id']}")
+        else:
+            msg = ("You are being banned because your name matched a spam filter. If this was done in error, please "
+                  "rejoin from another IP with a username not containing any promotional information and speak with a "
+                  "moderator.")
         if check_name(member.name):
-            await self.send_message(member, "You are being banned because your name matched a spam filter.")
+            await self.send_message(member, msg)
             await self.ban(member)
         if self._greeting_channel:
             await self.send_message(self._greeting_channel, "{}, {}!".format(self.greeting, member.mention))
 
     async def on_member_update(self, before, after):
         if check_name(after.name):
-            await self.send_message(after, "You are being banned because your name matched a spam filter.")
+            await self.send_message(after, msg)
             await self.ban(after)
 
     async def on_message(self, message):
