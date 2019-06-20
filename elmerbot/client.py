@@ -17,6 +17,7 @@ class ElmerBotClient(discord.Client):
         self._settings = settings
         self.data = ReviewData()
         self._greeting_channel = None
+        self._newuser_role = None
         self._logger = logging.getLogger("elmerbot.client")
         for command_obj in ElmerCommand.registry:
             self._logger.info(f"Registered command module: {type(command_obj).__name__}")
@@ -32,6 +33,13 @@ class ElmerBotClient(discord.Client):
         if "greeting_room_id" in self._settings:
             self._greeting_channel = self.get_channel(str(self._settings["greeting_room_id"]))
             self._logger.info(f"Greeting channel: {self._greeting_channel}")
+            if "newuser_role_id" in self._settings:
+                for role in self._greeting_channel.server.roles:
+                    if role.id == str(self._settings["newuser_role_id"]):
+                        self._newuser_role = role
+                        self._logger.info(f"New user role: {role.name} (#{role.id})")
+                if self._newuser_role is None:
+                    self._logger.warning("New user role not found")
 
     async def on_member_join(self, member):
         if "appeal_server_id" in self._settings:
@@ -47,6 +55,8 @@ class ElmerBotClient(discord.Client):
             await self.ban(member)
         if self._greeting_channel:
             await self.send_message(self._greeting_channel, "{}, {}!".format(self.greeting, member.mention))
+        if self._newuser_role:
+            await self.add_roles(member, self._newuser_role)
 
     async def on_member_update(self, before, after):
         if check_name(after.name):

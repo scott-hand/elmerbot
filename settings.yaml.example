@@ -2,7 +2,9 @@ production:
     token: secret_token_goes_here
     greeting_room_id: 12345
     appeal_server_id: abc1234
+    newuser_role_id: 12345
 development:
     token: secret_token_goes_here
     greeting_room_id: 12345
     appeal_server_id: abc1234
+    newuser_role_id: 12345
