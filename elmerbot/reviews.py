@@ -10,7 +10,9 @@ from collections import defaultdict
 from fuzzywuzzy import process
 
 
-SPREADSHEET_URL = "https://docs.google.com/spreadsheets/export?format=csv&id=1X1HTxkI6SqsdpNSkSSivMzpxNT-oeTbjFFDdEkXD30o"
+SPREADSHEET_URL = (
+    "https://docs.google.com/spreadsheets/export?format=csv&id=1X1HTxkI6SqsdpNSkSSivMzpxNT-oeTbjFFDdEkXD30o"
+)
 
 
 def parse_date(date):
@@ -34,7 +36,6 @@ def parse_date(date):
         return "2000-01-01"
 
 
-
 class ReviewData(object):
     def __init__(self):
         self._cache = None
@@ -47,7 +48,7 @@ class ReviewData(object):
 
     def _build_id_index(self):
         for idx, wname in enumerate(self._cache):
-            self._id_idx[wname] = idx + 1 
+            self._id_idx[wname] = idx + 1
             self._rev_id_idx[idx + 1] = wname
 
     def _compute_stats(self):
@@ -78,7 +79,7 @@ class ReviewData(object):
             return
 
         buff = io.StringIO(response.text)
-        reader = csv.DictReader(buff, delimiter=",", quotechar="\"")
+        reader = csv.DictReader(buff, delimiter=",", quotechar='"')
 
         self._cache = defaultdict(list)
         self._expires = arrow.get().replace(hours=1).timestamp
@@ -86,11 +87,14 @@ class ReviewData(object):
         total = 0
         for idx, row in enumerate(reader):
             total += 1
-            entry = {"name": row["Whisky Name"].strip(),
-                     "username": row["Reviewer's Reddit Username"].strip(),
-                     "link": row["Link To Reddit Review"].strip(),
-                     "price": row["Full Bottle Price Paid"],
-                     "date": parse_date(row["Date of Review"]), "id": idx}
+            entry = {
+                "name": row["Whisky Name"].strip(),
+                "username": row["Reviewer's Reddit Username"].strip(),
+                "link": row["Link To Reddit Review"].strip(),
+                "price": row["Full Bottle Price Paid"],
+                "date": parse_date(row["Date of Review"]),
+                "id": idx,
+            }
             try:
                 entry["rating"] = int(row["Reviewer Rating"].strip())
             except:
@@ -115,7 +119,9 @@ class ReviewData(object):
         return self._cache
 
     def search(self, pattern, matches=5):
-        results = process.extractBests(pattern, self.reviews.keys(), processor=lambda x: x, limit=matches, score_cutoff=70)
+        results = process.extractBests(
+            pattern, self.reviews.keys(), processor=lambda x: x, limit=matches, score_cutoff=70
+        )
         return [(result, self._id_idx[result], conf) for result, conf in results]
 
     def find(self, whisky_id):

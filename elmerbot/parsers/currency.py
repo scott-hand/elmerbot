@@ -39,9 +39,9 @@ class CurrencyParser(ElmerParser):
         amount = float(amount.replace(",", "."))
         unit = unit.upper()
 
-        em = discord.Embed(title="{:.2f} {}".format(amount, unit),
-                           description="Currency Conversion Table",
-                           color=0x00DD00)
+        em = discord.Embed(
+            title="{:.2f} {}".format(amount, unit), description="Currency Conversion Table", color=0x00DD00
+        )
         rates = self._get_unit(unit)
         rates[unit] = 1
         for other_unit in self._currencies:

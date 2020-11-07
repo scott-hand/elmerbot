@@ -8,10 +8,11 @@ __all__ = ["SearchCommand", "InfoCommand"]
 
 class SearchCommand(ElmerCommand):
     command = "search"
-    description = ("Search for a whisky by name. Optionally put a number of results to limit it to in front of "
-                   "your query.\n"
-                   "Examples: `!search stagg 2014` or `!search 10 stagg`"
-                   )
+    description = (
+        "Search for a whisky by name. Optionally put a number of results to limit it to in front of "
+        "your query.\n"
+        "Examples: `!search stagg 2014` or `!search 10 stagg`"
+    )
 
     async def handle(self, client, message, args):
         self._logger.info("Got search command")
@@ -31,8 +32,7 @@ class SearchCommand(ElmerCommand):
 
         # Stop now if there's nothing to show
         if not results:
-            em = discord.Embed(title="No results found for \"{}\".".format(pattern),
-                               colour=0xDD0000)
+            em = discord.Embed(title='No results found for "{}".'.format(pattern), colour=0xDD0000)
             await client.send_message(message.channel, embed=em)
             return
 
@@ -45,20 +45,24 @@ class SearchCommand(ElmerCommand):
             last_conf = conf
             output.append("**{}** [#{}]".format(token, whisky_id))
         hits = len(output)
-        output += ["", "Use **!info <id>** to get review information. The <id> is the number in brackets \
-                from search results."]
-        em = discord.Embed(title="{} Results for \"{}\":".format(hits, pattern),
-                           description="\n".join(output),
-                           colour=0x00DD00)
+        output += [
+            "",
+            "Use **!info <id>** to get review information. The <id> is the number in brackets \
+                from search results.",
+        ]
+        em = discord.Embed(
+            title='{} Results for "{}":'.format(hits, pattern), description="\n".join(output), colour=0x00DD00
+        )
         await client.send_message(message.channel, embed=em)
 
 
 class InfoCommand(ElmerCommand):
     command = "info"
-    description = ("Search for a whisky by name. Optionally put a number of results to limit it to in front of your "
-                   "query.\n"
-                   "Examples: `!search stagg 2014` or `!search 10 stagg`"
-                   )
+    description = (
+        "Search for a whisky by name. Optionally put a number of results to limit it to in front of your "
+        "query.\n"
+        "Examples: `!search stagg 2014` or `!search 10 stagg`"
+    )
 
     async def handle(self, client, message, args):
         self._logger.info("Got info command")
@@ -74,9 +78,11 @@ class InfoCommand(ElmerCommand):
             pattern = "".join([c for c in args if c in whitelist])
             result = client.data.search(pattern, 1)
             if not result:
-                em = discord.Embed(title="Could not find \"{}\"".format(pattern),
-                                   description="Try using **!search** first.",
-                                   colour=0xDD0000)
+                em = discord.Embed(
+                    title='Could not find "{}"'.format(pattern),
+                    description="Try using **!search** first.",
+                    colour=0xDD0000,
+                )
                 await client.send_message(message.channel, embed=em)
                 return
             whisky_id = result[0][1]
@@ -92,15 +98,20 @@ class InfoCommand(ElmerCommand):
             delta = round(avg_rating - client.data.avg, 2)
             delta = "+" + str(delta) if delta >= 0.0 else str(delta)
             output.append("**Average rating:** {} based on {} reviews with scores.".format(avg_rating, len(ratings)))
-            output.append("It is {} from the global average \
-                    of {} with standard deviation {}".format(delta, client.data.avg, client.data.stddev))
+            output.append(
+                "It is {} from the global average \
+                    of {} with standard deviation {}".format(
+                    delta, client.data.avg, client.data.stddev
+                )
+            )
             output.append("**Most recent reviews:**")
             for idx, review in enumerate(client.data.most_recent(whisky_id=whisky_id)):
-                output.append("{}. {} gave it {}. [Link]({})".format(idx + 1, review["username"],
-                                                                     review["rating"] or "no rating", review["link"]))
+                output.append(
+                    "{}. {} gave it {}. [Link]({})".format(
+                        idx + 1, review["username"], review["rating"] or "no rating", review["link"]
+                    )
+                )
         else:
             output.append("**Average rating:** No reviews with scores.")
-        em = discord.Embed(title="{}".format(data[0]["name"]),
-                           description="\n".join(output),
-                           colour=0x00DD00)
+        em = discord.Embed(title="{}".format(data[0]["name"]), description="\n".join(output), colour=0x00DD00)
         await client.send_message(message.channel, embed=em)

@@ -4,10 +4,11 @@ from elmerbot import RegisteredClass
 
 class ElmerCommand(object, metaclass=RegisteredClass):
     """Provides a base class for commands to inherit. Contains the following class variables:
-    
+
     command - The command typed in chat to trigger the execution of this object.
     description - The text sent from the help command.
     """
+
     command = None
     description = None
 

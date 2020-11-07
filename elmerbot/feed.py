@@ -43,12 +43,15 @@ class ReviewFeed(object):
 
     def _handle_submission(self, submission):
         human_time = datetime.utcfromtimestamp(submission.created_utc).strftime("%Y-%m-%d %H:%M")
-        self._logger.info(f"Handling submission {submission.id} \"{submission.title}\" ({human_time})")
-        embed = {"title": submission.title,
-                 "url": f"https://www.reddit.com{submission.permalink}",
-                 "description": (f"**u/{submission.author.name}** posted a review to "
-                                 f"**r/{submission.subreddit.display_name}**"),
-                 "thumbnail": {"url": submission.thumbnail}}
+        self._logger.info(f'Handling submission {submission.id} "{submission.title}" ({human_time})')
+        embed = {
+            "title": submission.title,
+            "url": f"https://www.reddit.com{submission.permalink}",
+            "description": (
+                f"**u/{submission.author.name}** posted a review to " f"**r/{submission.subreddit.display_name}**"
+            ),
+            "thumbnail": {"url": submission.thumbnail},
+        }
         # Search for oldest comment from author. There should be a way to do this directly with PRAW, but I don't
         # see it, so just doing a linear search for now...
         submission.comments.replace_more(limit=0)
@@ -80,10 +83,10 @@ class ReviewFeed(object):
                         continue
                     if submission.id not in self._history[sub]:
                         if start - submission.created_utc < self._delay:
-                            self._logger.debug(f"Skipping \"{submission.title}\" as too new")
+                            self._logger.debug(f'Skipping "{submission.title}" as too new')
                         else:
                             if "review" not in submission.title.lower():
-                                self._logger.info(f"Skipping \"{submission.title}\" as not likely being a review")
+                                self._logger.info(f'Skipping "{submission.title}" as not likely being a review')
                             else:
                                 self._handle_submission(submission)
                             self._logger.debug(f"Added {submission.id} to history.")
@@ -115,9 +118,11 @@ class ReviewFeed(object):
 
 
 def main():
-    parser = configargparse.ArgumentParser(description="Starts a script to post reddit reviews to Discord",
-                                           default_config_files=["reviewfeed.cfg"],
-                                           auto_env_var_prefix="reviewfeed_")
+    parser = configargparse.ArgumentParser(
+        description="Starts a script to post reddit reviews to Discord",
+        default_config_files=["reviewfeed.cfg"],
+        auto_env_var_prefix="reviewfeed_",
+    )
     parser.add("-c", "--config", is_config_file=True, help="Config path if not reviewfeed.cfg")
     parser.add("-d", "--delay", help="Delay in seconds to wait for user to post comment", type=int, default=300)
     parser.add("-u", "--user", help="praw.ini section if not default", default="default")
@@ -125,7 +130,7 @@ def main():
     parser.add("-v", "--verbose", help="Show verbose information.", action="store_true")
     parser.add("-w", "--webhook", help="Webhook URL", required=True)
     args = parser.parse_args()
-    
+
     configure_logger("reviewfeed", logging.DEBUG if args.verbose else logging.INFO)
     logger = logging.getLogger("reviewfeed.main")
     logger.info(f"Starting review feed to: {args.webhook}")

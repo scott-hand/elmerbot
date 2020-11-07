@@ -19,6 +19,6 @@ def check_name(name):
     logger = logging.getLogger("elmerbot.namecheck")
     for pattern in name_patterns:
         if pattern.search(name):
-            logger.warn(f"Found spammer with name \"{name}\" using pattern \"{pattern.pattern}\"")
+            logger.warn(f'Found spammer with name "{name}" using pattern "{pattern.pattern}"')
             return True
     return False

@@ -3,8 +3,8 @@ from elmerbot import RegisteredClass
 
 
 class ElmerParser(object, metaclass=RegisteredClass):
-    """Provides a base class for parsers to inherit.
-    """
+    """Provides a base class for parsers to inherit."""
+
     name = None
 
     def __init__(self):
