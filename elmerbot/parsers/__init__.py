@@ -18,4 +18,5 @@ class ElmerParser(object, metaclass=RegisteredClass):
 
 
 # Load subclasses and register them
-from elmerbot.parsers.currency import *
+# 6 Nov 2020 - Removing this for now until I have time to find a working API
+# from elmerbot.parsers.currency import *
