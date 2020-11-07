@@ -10,6 +10,7 @@ __all__ = ["CurrencyParser"]
 
 class CurrencyParser(ElmerParser):
     name = "currency"
+    enabled = False
 
     def __init__(self):
         super(CurrencyParser, self).__init__()
@@ -48,4 +49,4 @@ class CurrencyParser(ElmerParser):
             display_value = str(rates[other_unit]).zfill(2)
             display_value = "{:.2f}".format(amount * rates[other_unit])
             em.add_field(name=other_unit, value=display_value)
-        await client.send_message(message.channel, embed=em)
+        await message.channel.send(embed=em)

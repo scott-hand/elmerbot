@@ -17,8 +17,8 @@ class SearchCommand(ElmerCommand):
     async def handle(self, client, message, args):
         self._logger.info("Got search command")
         if client.data.stale:
-            await client.send_message(message.channel, "One moment, reloading review data...")
-        await client.send_typing(message.channel)
+            await message.channel.send("One moment, reloading review data...")
+        await message.channel.trigger_typing()
         first, _, rest = args.partition(" ")
         pattern = args
         choices = 5
@@ -33,7 +33,7 @@ class SearchCommand(ElmerCommand):
         # Stop now if there's nothing to show
         if not results:
             em = discord.Embed(title='No results found for "{}".'.format(pattern), colour=0xDD0000)
-            await client.send_message(message.channel, embed=em)
+            await message.channel.send(embed=em)
             return
 
         # Compile results, stopping when there's a large drop in confidence.
@@ -53,7 +53,7 @@ class SearchCommand(ElmerCommand):
         em = discord.Embed(
             title='{} Results for "{}":'.format(hits, pattern), description="\n".join(output), colour=0x00DD00
         )
-        await client.send_message(message.channel, embed=em)
+        await message.channel.send(embed=em)
 
 
 class InfoCommand(ElmerCommand):
@@ -68,8 +68,8 @@ class InfoCommand(ElmerCommand):
         self._logger.info("Got info command")
         pending_msg = None
         if client.data.stale:
-            pending_msg = await client.send_message(message.channel, "One moment, reloading review data...")
-        await client.send_typing(message.channel)
+            pending_msg = await message.channel.send("One moment, reloading review data...")
+        await message.channel.trigger_typing()
         if args.isnumeric():
             whisky_id = int(args)
         else:
@@ -83,12 +83,12 @@ class InfoCommand(ElmerCommand):
                     description="Try using **!search** first.",
                     colour=0xDD0000,
                 )
-                await client.send_message(message.channel, embed=em)
+                await message.channel.send(embed=em)
                 return
             whisky_id = result[0][1]
         data = client.data.find(whisky_id)
         if pending_msg:
-            await client.delete_message(pending_msg)
+            await pending_msg.delete()
         output = []
 
         # Generate stats
@@ -114,4 +114,4 @@ class InfoCommand(ElmerCommand):
         else:
             output.append("**Average rating:** No reviews with scores.")
         em = discord.Embed(title="{}".format(data[0]["name"]), description="\n".join(output), colour=0x00DD00)
-        await client.send_message(message.channel, embed=em)
+        await message.channel.send(embed=em)

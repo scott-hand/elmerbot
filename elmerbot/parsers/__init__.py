@@ -6,6 +6,7 @@ class ElmerParser(object, metaclass=RegisteredClass):
     """Provides a base class for parsers to inherit."""
 
     name = None
+    enabled = False
 
     def __init__(self):
         self._logger = logging.getLogger("elmerbot.{}-parser".format(self.name or "noname"))
@@ -19,4 +20,4 @@ class ElmerParser(object, metaclass=RegisteredClass):
 
 # Load subclasses and register them
 # 6 Nov 2020 - Removing this for now until I have time to find a working API
-# from elmerbot.parsers.currency import *
+from elmerbot.parsers.currency import *

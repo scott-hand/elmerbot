@@ -23,7 +23,7 @@ class ElmerBotClient(discord.Client):
             self._logger.info(f"Registered command module: {type(command_obj).__name__}")
         for parser_obj in ElmerParser.registry:
             self._logger.info(f"Registered parser module: {type(parser_obj).__name__}")
-        super(ElmerBotClient, self).__init__()
+        super(ElmerBotClient, self).__init__(intents=discord.Intents.all())
 
     def run(self):
         super(ElmerBotClient, self).run(self._settings.get("token", ""))
@@ -31,11 +31,11 @@ class ElmerBotClient(discord.Client):
     async def on_ready(self):
         self._logger.info("Logged in as {} {}".format(self.user.name, self.user.id))
         if "greeting_room_id" in self._settings:
-            self._greeting_channel = self.get_channel(str(self._settings["greeting_room_id"]))
+            self._greeting_channel = self.get_channel(self._settings["greeting_room_id"])
             self._logger.info(f"Greeting channel: {self._greeting_channel}")
             if "newuser_role_id" in self._settings:
-                for role in self._greeting_channel.server.roles:
-                    if role.id == str(self._settings["newuser_role_id"]):
+                for role in self._greeting_channel.guild.roles:
+                    if role.id == self._settings["newuser_role_id"]:
                         self._newuser_role = role
                         self._logger.info(f"New user role: {role.name} (#{role.id})")
                 if self._newuser_role is None:
@@ -55,30 +55,30 @@ class ElmerBotClient(discord.Client):
                 "moderator."
             )
         if check_name(member.name):
-            await self.send_message(member, msg)
-            await self.ban(member)
+            await member.send(msg)
+            await member.ban()
         if self._greeting_channel:
-            await self.send_message(self._greeting_channel, "{}, {}!".format(self.greeting, member.mention))
+            await self._greeting_channel.send("{}, {}!".format(self.greeting, member.mention))
         if self._newuser_role:
-            await self.add_roles(member, self._newuser_role)
+            await member.add_roles(self._newuser_role)
 
     async def on_member_update(self, before, after):
         if check_name(after.name):
-            await self.send_message(after, msg)
-            await self.ban(after)
+            await after.send(msg)
+            await after.ban()
 
     async def on_message(self, message):
-        if not message.server or not message.channel:
+        if not message.guild or not message.channel:
             return
 
         # Prevent bot answering itself
-        myself = [m for m in message.server.members if m.id == self.user.id][0]
+        myself = [m for m in message.guild.members if m.id == self.user.id][0]
         if message.author == myself:
             return
 
         # Check all parsers
         for parser in ElmerParser.registry:
-            if parser.check(message.content):
+            if parser.enabled and parser.check(message.content):
                 await parser.handle(self, message)
 
         # Validate against prefix
@@ -87,7 +87,7 @@ class ElmerBotClient(discord.Client):
 
         # Just for a while to ease the transition
         if message.content.startswith("!elmer"):
-            await self.send_message(message.channel, "I've been tweaked to use **!** instead of **!elmer** now.")
+            await message.channel.send("I've been tweaked to use **!** instead of **!elmer** now.")
             return
 
         # Parse out command and check against all commands

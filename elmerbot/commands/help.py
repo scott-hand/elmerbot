@@ -21,5 +21,5 @@ class HelpCommand(ElmerCommand):
         # Combine, send, and clean up the help command message
         help_msg = "\n".join(output)
         em = discord.Embed(title="ElmerBot Help", description=help_msg, colour=0x00DD00)
-        await client.send_message(message.author, embed=em)
-        await client.delete_message(message)
+        await message.author.send(embed=em)
+        await message.delete()

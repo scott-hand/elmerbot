@@ -82,7 +82,7 @@ class ReviewData(object):
         reader = csv.DictReader(buff, delimiter=",", quotechar='"')
 
         self._cache = defaultdict(list)
-        self._expires = arrow.get().replace(hours=1).timestamp
+        self._expires = arrow.get().shift(hours=1).timestamp
 
         total = 0
         for idx, row in enumerate(reader):
