@@ -99,7 +99,7 @@ def main():
     parser.add_argument("-e", "--env", help="production or development (Default: development)", default="development")
     parser.add_argument("-s", "--settings", help="YAML file with settings", default="settings.yaml")
     args = parser.parse_args()
-    settings = yaml.load(open(args.settings))
+    settings = yaml.load(open(args.settings), Loader=yaml.SafeLoader)
     configure_logger("elmerbot", logging.INFO)
     logger = logging.getLogger("elmerbot.main")
     logger.info("Starting bot...")
